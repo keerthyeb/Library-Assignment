@@ -14,6 +14,15 @@ public class User {
         borrowedBooks = new ArrayList<>();
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", hasBorrowed=" + hasBorrowed +
+                ", borrowedBooks=" + borrowedBooks +
+                '}';
+    }
+
     public String getName() {
         return name;
     }

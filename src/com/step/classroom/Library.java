@@ -7,14 +7,14 @@ import java.util.Map;
 
 public class Library {
     private String librarian;
-    private List<Book> books;
+    private Map<String,Book> books;
     private List<Book> avaliableBooks;
     private Map<Book, User> borrowedBookDetails;
     private Map<User, ArrayList<Book>> usersDetails;
 
     public Library(String librarian) {
         this.librarian = librarian;
-        books = new ArrayList<>();
+        books = new HashMap<>();
         avaliableBooks = new ArrayList<>();
         usersDetails = new HashMap<>();
         borrowedBookDetails = new HashMap<>();
@@ -40,7 +40,7 @@ public class Library {
 
     public boolean addBook(String bookName) {
         Book newBook = new Book(bookName);
-        books.add(newBook);
+        books.put(bookName,newBook);
         avaliableBooks.add(newBook);
         return true;
     }
@@ -71,9 +71,7 @@ public class Library {
     }
 
     public Book getBookFromAllBook(String bookName) {
-        for (Book book : books) {
-            if (book.getName().equals(bookName)) return book;
-        }
+        if(books.containsKey(bookName)) return books.get(bookName);
         return null;
     }
 
@@ -96,6 +94,14 @@ public class Library {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public Map<String, Book> getBooks() {
+        return books;
+    }
+
+    public List<Book> getAvaliableBooks() {
+        return avaliableBooks;
     }
 
     public String whoHasBorrowed(String bookName) {
@@ -126,8 +132,8 @@ public class Library {
 
     public boolean removeBook(String bookName) {
         try {
-            if(!books.contains(bookName)) return false;
-            books.remove(getBook(bookName));
+            if(!books.containsKey(bookName)) return false;
+            books.remove(bookName);
             avaliableBooks.remove(getBook(bookName));
             return true;
         } catch (Exception e) {
@@ -137,17 +143,10 @@ public class Library {
 
     public boolean isRemoved(String bookName) {
         try {
-            return !books.contains(getBook(bookName));
+            return !books.containsKey(bookName);
         } catch (Exception e) {
             return false;
         }
     }
 
-    public List<Book> getBooks() {
-        return books;
-    }
-
-    public List<Book> getAvaliableBooks() {
-        return avaliableBooks;
-    }
 }
