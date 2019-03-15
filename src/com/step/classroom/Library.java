@@ -46,18 +46,16 @@ public class Library {
     }
 
     public boolean isBookPresent(String bookName) {
-        if (getBook(bookName) != null) {
-            return true;
-        }
-        return false;
+        if (getBook(bookName) == null) return false;
+        return true;
     }
 
     public boolean borrowBook(String readerName, String bookName) {
         Book book = getBook(bookName);
-        if (book == null) {
+        User currentUser = getUser(readerName);
+        if (book == null || currentUser == null) {
             return false;
         }
-        User currentUser = getUser(readerName);
         currentUser.addBorrowedBook(book);
         avaliableBooks.remove(book);
         borrowedBookDetails.put(book, currentUser);
@@ -67,14 +65,14 @@ public class Library {
 
     public Book getBook(String bookName) {
         for (Book book : avaliableBooks) {
-            if (book.getName() == bookName) return book;
+            if (book.getName().equals(bookName)) return book;
         }
         return null;
     }
 
     public Book getBookFromAllBook(String bookName) {
         for (Book book : books) {
-            if (book.getName() == bookName) return book;
+            if (book.getName().equals(bookName)) return book;
         }
         return null;
     }
@@ -82,20 +80,31 @@ public class Library {
     public boolean isBorrowed(String userName, String bookName) {
         User user = getUser(userName);
         Book book = getBookFromAllBook(bookName);
+        if (user == null || book == null) return false;
         return this.usersDetails.get(user).contains(book);
     }
 
-    public void returnBooks(String userName, String bookName) {
-        Book book = getBookFromAllBook(bookName);
-        User user = getUser(userName);
-        avaliableBooks.add(book);
-        borrowedBookDetails.remove(book);
-        usersDetails.get(user).remove(book);
+    public boolean returnBooks(String userName, String bookName) {
+        if (!isBorrowed(userName, bookName)) return false;
+        try {
+            Book book = getBookFromAllBook(bookName);
+            User user = getUser(userName);
+            avaliableBooks.add(book);
+            borrowedBookDetails.remove(book);
+            usersDetails.get(user).remove(book);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String whoHasBorrowed(String bookName) {
         Book book = getBookFromAllBook(bookName);
-        return borrowedBookDetails.get(book).getName();
+        try {
+            return borrowedBookDetails.get(book).getName();
+        } catch (Exception e) {
+            return "No one borrowed";
+        }
     }
 
     public ArrayList borrowedBooksByUser(String username) {
@@ -106,25 +115,32 @@ public class Library {
     @Override
     public String toString() {
         return "Library{" +
-                "librarian='" + librarian + '\'' +
+                "librarian='" + librarian + '\n' +
                 ", books=" + books +
-                ", avaliableBooks=" + avaliableBooks +
-                ", borrowedBookDetails=" + borrowedBookDetails +
-                ", usersDetails=" + usersDetails +
+                ", \navaliableBooks=" + avaliableBooks +
+                ", \nborrowedBookDetails=" + borrowedBookDetails +
+                ", \nusersDetails=" + usersDetails +
                 '}';
     }
 
 
-
-    public void removeBook(String bookName) {
-        books.remove(getBook(bookName));
-        avaliableBooks.remove(getBook(bookName));
-
-
+    public boolean removeBook(String bookName) {
+        try {
+            if(!books.contains(bookName)) return false;
+            books.remove(getBook(bookName));
+            avaliableBooks.remove(getBook(bookName));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean isRemoved(String bookName) {
-        return !books.contains(getBook(bookName));
+        try {
+            return !books.contains(getBook(bookName));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public List<Book> getBooks() {
